@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Your AI Travel Itinerary</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #263238;
+            margin: 0;
+            padding: 30px 16px;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: #176b52;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: #176b52;
+            margin-top: 28px;
+            border-bottom: 1px solid #e6ece9;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            color: #305e50;
+            margin-top: 24px;
+        }
+
+        ul {
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .notice {
+            background: #fff8e6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 24px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 20px;
+            background: #176b52;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .back-button:hover {
+            background: #10513e;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Your AI Travel Itinerary</h1>
+
+        <h2>Destination: {{ destination }}</h2>
+
+        <div class="itinerary">
+            {{ itinerary_html | safe }}
+        </div>
+
+        <div class="notice">
+            Travel plans and costs are estimates. Verify attractions,
+            local prices, opening hours, transport, and safety information
+            before travelling.
+        </div>
+
+        <a href="/" class="back-button">Plan Another Trip</a>
+    </div>
+</body>
+</html>
