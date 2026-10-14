@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartLib AI | Library Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="brand">
+                <div class="logo">S</div>
+                <div>
+                    <h1>SmartLib AI</h1>
+                    <p>Your intelligent library assistant</p>
+                </div>
+            </div>
+            <span class="status"><span class="status-dot"></span> Online</span>
+        </header>
+
+        <main class="main-content">
+            <section class="welcome">
+                <div class="welcome-icon">📚</div>
+                <h2>What would you like to read?</h2>
+                <p>Find books, explore subjects, and discover your next read.</p>
+            </section>
+
+            <section class="search-section">
+                <form id="search-form">
+                    <input
+                        id="book-search"
+                        type="search"
+                        placeholder="Search by title, author, or category..."
+                        autocomplete="off"
+                    >
+                    <button type="submit">Search</button>
+                </form>
+            </section>
+
+            <section class="results-section">
+                <div class="section-heading">
+                    <h3>Book Catalogue</h3>
+                    <span id="result-count">Loading books...</span>
+                </div>
+                <div id="book-results" class="book-grid"></div>
+            </section>
+
+            <section class="chat-section">
+                <div class="chat-heading">
+                    <div>
+                        <h3>Ask SmartLib AI</h3>
+                        <p>Ask questions about books and library topics.</p>
+                    </div>
+                    <span class="ai-label">AI ASSISTANT</span>
+                </div>
+
+                <div id="chat-messages" class="chat-messages" aria-live="polite">
+                    <div class="message assistant-message">
+                        Hi! 👋 I'm SmartLib AI. Try searching for a book above,
+                        or ask me a question about reading and programming.
+                    </div>
+                </div>
+
+                <form id="chat-form" class="chat-form">
+                    <input
+                        id="chat-input"
+                        type="text"
+                        placeholder="Type your question..."
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" id="send-button">Send</button>
+                </form>
+                <p class="disclaimer">
+                    AI responses may contain mistakes. Verify book details
+                    against the catalogue.
+                </p>
+            </section>
+        </main>
+
+        <footer>
+            SmartLib AI · Educational project
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

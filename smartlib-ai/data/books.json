@@ -1,0 +1,43 @@
+
+[
+  {
+    "id": 1,
+    "title": "Python Crash Course",
+    "author": "Eric Matthes",
+    "category": "Programming",
+    "description": "A beginner-friendly introduction to Python programming.",
+    "available_copies": 4
+  },
+  {
+    "id": 2,
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "category": "Software Engineering",
+    "description": "A guide to writing readable and maintainable software.",
+    "available_copies": 2
+  },
+  {
+    "id": 3,
+    "title": "Introduction to Algorithms",
+    "author": "Thomas H. Cormen and others",
+    "category": "Algorithms",
+    "description": "A comprehensive textbook on algorithms and data structures.",
+    "available_copies": 3
+  },
+  {
+    "id": 4,
+    "title": "Deep Learning",
+    "author": "Ian Goodfellow, Yoshua Bengio and Aaron Courville",
+    "category": "Artificial Intelligence",
+    "description": "An introduction to deep learning theory and methods.",
+    "available_copies": 1
+  },
+  {
+    "id": 5,
+    "title": "Computer Networking: A Top-Down Approach",
+    "author": "James Kurose and Keith Ross",
+    "category": "Networking",
+    "description": "Explains computer networking concepts using a top-down approach.",
+    "available_copies": 0
+  }
+]
