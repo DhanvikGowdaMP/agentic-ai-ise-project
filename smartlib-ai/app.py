@@ -290,11 +290,15 @@ Instructions:
 # 9. RUN APPLICATION
 # --------------------------------------------------
 
-if __name__ == "__main__":
-    initialize_database()
 
+# Initialize the database when the application starts
+initialize_database()
+
+# Run locally
+if __name__ == "__main__":
     app.run(
         host="127.0.0.1",
         port=5000,
         debug=True
     )
+
