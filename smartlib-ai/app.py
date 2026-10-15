@@ -179,11 +179,13 @@ def get_books():
 # 8. GROQ CHATBOT API
 # --------------------------------------------------
 
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
     data = request.get_json(silent=True) or {}
 
     question = data.get("message", "")
+    history = data.get("history", [])
 
     if not isinstance(question, str):
         return jsonify({
@@ -202,6 +204,30 @@ def chat():
             "error": "Please keep your question under 1000 characters."
         }), 400
 
+    # Validate conversation history.
+    if not isinstance(history, list):
+        history = []
+
+    valid_history = []
+
+    for item in history[-10:]:
+        if not isinstance(item, dict):
+            continue
+
+        role = item.get("role")
+        content = item.get("content")
+
+        if (
+            role in ("user", "assistant")
+            and isinstance(content, str)
+            and content.strip()
+            and len(content) <= 3000
+        ):
+            valid_history.append({
+                "role": role,
+                "content": content.strip()
+            })
+
     if groq_client is None:
         app.logger.error(
             "Groq client unavailable. Check the project .env file."
@@ -213,11 +239,9 @@ def chat():
             )
         }), 503
 
-    # Retrieve the catalogue for grounding AI responses.
+    # Retrieve catalogue books.
     relevant_books = search_books(question, limit=20)
 
-    # The small sample catalogue can be supplied for recommendations
-    # even when the question does not match a book field.
     if not relevant_books:
         relevant_books = search_books("", limit=20)
 
@@ -226,63 +250,51 @@ def chat():
         ensure_ascii=False
     )
 
-    
     system_prompt = f"""
 You are SmartLib AI, an intelligent library and programming
 learning assistant.
 
-You can answer general questions about:
-- Java, Python, C, C++, and JavaScript
-- SQL, DBMS, and database concepts
-- Data structures and algorithms
-- Web development and software engineering
-- Artificial intelligence and computer science
-- Books, reading recommendations, and library services
+You can answer questions about Java, Python, C, C++,
+JavaScript, SQL, DBMS, algorithms, web development,
+software engineering, AI, and library services.
 
-LIBRARY CATALOGUE (SQLite database):
+LIBRARY CATALOGUE:
 {catalogue}
 
-IMPORTANT INSTRUCTIONS:
-
-1. First, understand what the user is actually asking.
-2. For programming questions, answer the technical question
-   directly using the programming language the user requested.
-3. For learning-roadmap or learning-resource questions,
-   recommend suitable resources even if they are not in
-   the library catalogue.
-4. Do not restrict general educational answers to the
-   books listed in the catalogue.
-5. Clearly distinguish external learning resources from
-   books available in the library.
-6. Recommend catalogue books only when relevant. Never
-   invent catalogue titles, authors, or availability.
-7. If no suitable book exists in the catalogue, say so briefly
-   and then provide useful external resources or learning advice.
-8. Do not recommend a Python book as the best Java resource
-   unless the user specifically asks for that comparison.
-9. Explain concepts in beginner-friendly language and include
-   examples when helpful.
-10. Mention that catalogue availability is sample project data,
-    not live college library inventory, when discussing availability.
-11. Keep answers clear, relevant, and appropriately concise.
+Instructions:
+1. Answer the user's actual question directly.
+2. Use conversation history to understand follow-up questions.
+3. If the user says "in Python, C, C++" after asking about
+   Java classes and objects, explain the same concept in
+   each requested language.
+4. Answer general programming questions even if the catalogue
+   has no relevant books.
+5. Recommend catalogue books only when relevant.
+6. Never invent catalogue titles, authors, or availability.
+7. If no suitable catalogue book exists, explain this briefly
+   and offer useful external resources where appropriate.
+8. Explain concepts clearly for beginners and include examples.
+9. Catalogue availability is sample data, not live inventory.
 """
 
-
     try:
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            *valid_history,
+            {
+                "role": "user",
+                "content": question
+            }
+        ]
+
         completion = groq_client.chat.completions.create(
             model=GROQ_MODEL,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user",
-                    "content": question
-                }
-            ],
+            messages=messages,
             temperature=0.3,
-            max_completion_tokens=500
+            max_completion_tokens=800
         )
 
         answer = completion.choices[0].message.content
@@ -294,16 +306,16 @@ IMPORTANT INSTRUCTIONS:
             "answer": answer
         })
 
-    
     except Exception as e:
-        print("\n========== GROQ API ERROR ==========", flush=True)
-        print(type(e).__name__, flush=True)
-        print(str(e), flush=True)
-        print("====================================\n", flush=True)
+        app.logger.exception("Groq API request failed")
 
         return jsonify({
-            "answer": "The AI request failed. Check the VS Code terminal for the error."
+            "answer": (
+                "The AI request failed. Check the VS Code terminal "
+                "for the error."
+            )
         }), 502
+
 
 
 

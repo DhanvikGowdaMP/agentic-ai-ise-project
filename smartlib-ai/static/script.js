@@ -9,6 +9,10 @@ const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
 const sendButton = document.getElementById("send-button");
 
+// Store recent conversation messages.
+const conversationHistory = [];
+const MAX_HISTORY_MESSAGES = 10;
+
 function createElement(tag, className, text = "") {
     const element = document.createElement(tag);
     element.className = className;
@@ -89,7 +93,12 @@ async function loadBooks(query = "") {
 }
 
 function addMessage(text, type) {
-    const message = createElement("div", `message ${type}-message`, text);
+    const message = createElement(
+        "div",
+        `message ${type}-message`,
+        text
+    );
+
     chatMessages.append(message);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -113,19 +122,39 @@ async function sendQuestion(question) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ message: question })
+            body: JSON.stringify({
+                message: question,
+                history: conversationHistory
+            })
         });
 
         const data = await response.json();
         loading.remove();
 
         if (!response.ok) {
-            throw new Error(data.error || "The request failed.");
+            throw new Error(
+                data.error || data.answer || "The request failed."
+            );
         }
 
         addMessage(data.answer, "assistant");
+
+        // Store the exchange only after a successful response.
+        conversationHistory.push(
+            { role: "user", content: question },
+            { role: "assistant", content: data.answer }
+        );
+
+        // Keep only the most recent 10 messages.
+        if (conversationHistory.length > MAX_HISTORY_MESSAGES) {
+            conversationHistory.splice(
+                0,
+                conversationHistory.length - MAX_HISTORY_MESSAGES
+            );
+        }
     } catch (error) {
         loading.remove();
+
         addMessage(
             error.message || "Unable to contact the AI assistant.",
             "assistant"
